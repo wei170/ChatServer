@@ -15,9 +15,12 @@ import java.util.*;
  *
  */
 public class ChatServer {
-	
+	private User[] users;
+    private int maxMessages;
 	public ChatServer(User[] users, int maxMessages) {
 		// TODO Complete the constructor
+        this.users = users;
+        this.maxMessages = maxMessages;
 	}
 
 	/**
@@ -100,7 +103,7 @@ public class ChatServer {
      * 4.Invoke the appropriate protocol method and return its response.
      *
      *            Client Request Commands
-     * Command	       Parameter 0	    Parameter 1	    Parameter 2
+     * Command	       Parameter 1	    Parameter 2	    Parameter 3
      * ---------------------------------------------------------------
      * ADD-USER	       cookie ID	    username	    password
      * USER-LOGIN	   username	        password
@@ -115,12 +118,47 @@ public class ChatServer {
 	public String parseRequest(String request) {
 		// TODO: Is the complete line of the client request.
         String[] requestArray = request.split("\t");
-        // implement a default user.
-		return request;
+
+        /*
+         * Verifying the Request Format
+         * For all requests, you must validate that the text of the request adheres to the protocol
+         * (e.g., the fields of the request being tab delimited).
+         * This includes things such as checking the number of parameters or ensuring that an integer parameter is
+         *      actually a number within the correct bound.
+         *
+         *  1X	Request Format Errors
+         *
+         *  10	Format Command Error	  “Format Command Error: The specified client command isn't formatted properly.”
+         *  This error code should be returned if there are any errors with the text formatting of the client request.
+         *
+         *  11	Unknown Command Error	“Unknown Command Error: The specified client command doesn't exist.”
+         *  Your server should respond with this error code if the command of the client request does not
+         *          match any of the protocol commands specified in this handout.
+         */
+//        if (requestArray.length < 2 || requestArray.length > 3) {
+//            return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+//        }
+        try {
+            switch (requestArray[0]) {
+                case ("ADD-USER"):
+                    if (requestArray.length != 4) {
+                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                    }
+                    if (requestArray[1] == null || requestArray[2] == null || requestArray[3] == null ||
+                            Integer.parseInt(requestArray[1]) < 0 || Integer.parseInt(requestArray[1]) > 9999) {
+                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                    }
+                    Integer.parseInt(requestArray[3]);
+
+            }
+        } catch (Exception e) {
+            return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+        }
+		return "";
 	}
 
 
-    /******************************************************************
+    /*****************************************************************
      * Protocol Method
      *
      * @param args
@@ -128,6 +166,12 @@ public class ChatServer {
      ******************************************************************/
 	public String addUser(String[] args) {
 		//TODO
+        /*
+         * To solve the problem of how to add the first real user, your server will implement a default user.
+         * A default user is a user whose existence is hardcoded into the server and
+         * will exist in every instance of the server.
+         * Your default user should have the username root and the password cs180.
+         */
 
 		return "";
 	}

@@ -18,7 +18,7 @@ public class User {
 
     public boolean checkPassword(String password) {
         // TODO : check it
-        return this.password == password;
+        return this.password.equals(password);
     }
 
     public SessionCookie getCookie() {
