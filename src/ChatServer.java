@@ -89,13 +89,33 @@ public class ChatServer {
 	/**
 	 * Determines which client command the request is using and calls the
 	 * function associated with that command.
-	 * 
+	 *
+     * 1.Parse the client request (that means split the request into the command and parameters).
+     * 2.Check format validity (valid command and correct number of parameters for this command).
+     *      if invalid return the appropriate error message
+     * 3.Verify the user's login session through their cookie (except for USER-LOGIN, since no cookie is required).
+     *      if the cookie is null, then the user is not authenticated yet, return the appropriate error message
+     *      if the cookie timedout, set the user cookie to null and return the appropriate error message
+     *      otherwise continue to the next step.
+     * 4.Invoke the appropriate protocol method and return its response.
+     *
+     *            Client Request Commands
+     * Command	       Parameter 1	    Parameter 2	    Parameter 3
+     * ---------------------------------------------------------------
+     * ADD-USER	       cookie ID	    username	    password
+     * USER-LOGIN	   username	        password
+     * POST-MESSAGE	   cookie ID	    message
+     * GET-MESSAGES	   cookie ID	    numMessages
+
+     *
 	 * @param request
 	 *            - the full line of the client request (CRLF included)
 	 * @return the server response
 	 */
 	public String parseRequest(String request) {
 		// TODO: Is the complete line of the client request.
+        String[] requestArray = request.split("\t");
+
 		return request;
 	}
 
@@ -108,6 +128,7 @@ public class ChatServer {
      ******************************************************************/
 	public String addUser(String[] args) {
 		//TODO
+
 		return "";
 	}
 
