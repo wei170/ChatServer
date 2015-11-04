@@ -6,16 +6,16 @@ import java.util.Random;
 public class SessionCookie {
     private long ID;
     Random random = new Random();
-    public int cookieIdentifier = random.nextInt(10000);
-    // TODO : Error => ID must be distinct
-    public static int timeoutLength = 300;
-    public static final long startTime = System.currentTimeMillis();
-    public static long currentTime;
-    // System.currentTimeMills();
+    public int cookieIdentifier;
+    public static int timeoutLength;
+    public final long startTime = System.currentTimeMillis();
+    private long currentTime;
 
     public SessionCookie(long id) {
         this.ID = id;
         // TODO : check it
+        this.cookieIdentifier = random.nextInt(10000);
+        // TODO : Error => ID must be distinct
     }
 
 
