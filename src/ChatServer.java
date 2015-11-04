@@ -1,4 +1,6 @@
+
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * <b> CS 180 - Project 4 - Chat Server Skeleton </b>
@@ -220,21 +222,67 @@ public class ChatServer {
     /*****************************************************************
      * Protocol Method
      *
+     * Each method needs to make its specific validation
+     *  (e.g: addUser needs to verify that the user doesn't already exist),
+     *   perform its job and update the cookie if needed.
+     *
      * @param args
      * @return
      ******************************************************************/
 	public String addUser(String[] args) {
-		//TODO
         /*
          * addUser needs to verify that the user doesn't already exist
+         *
+         * 1. Usernames and passwords can only contain alphanumerical values [A-Za-z0-9].
+         * 2. Usernames must be between 1 and 20 characters in length (inclusive).
+         * 3. Password must be between 4 and 40 characters in length (inclusive).
+         *
          */
+        for (int i = 0; i < users.length; i++) {
+            if (users[i].getCookie().getID() == Long.parseLong(args[1])) {
+                return String.format("FAILURE\t%2d\t%s\r\n", 22, MessageFactory.makeErrorMessage(22));
+            }
+        }
 
-		return "";
+        if (!args[2].matches("[A-Za-z0-9]+") || !args[3].matches("[A-Za-z0-9]+") ||
+                args[2].length() < 1 || args[2].length() > 20||
+                args[3].length() < 4 || args[3].length() > 40) {
+            return String.format("FAILURE\t%2d\t%s\r\n", 24, MessageFactory.makeErrorMessage(24));
+        }
+
+        // TODO: Add the user into the Users[] users
+
+
+
+		return "SUCCESS\r\n";
 	}
 
 	public String userLogin(String[] args) {
-		//TODO
-		return "";
+        /*
+         * 1. The user must already have been created earlier through addUser
+         * 2. The given user shouldn't already be authenticated (the SessionCookie associated should be null)
+         * 3. The password must be correct
+         * If every condition is met, then the method generates a new SessionCookie for the user to indicate that
+         *  she is now connected.
+         *  TODO: come up with more situation
+         */
+        if (!isCreated(args[1])) {
+            return String.format("FAILURE\t%2d\t%s\r\n", 20, MessageFactory.makeErrorMessage(20));
+        }
+        for (User u : users) {
+            if (args[1].equals(u.getName())) {
+                if (u.getCookie() != null) {
+                    return String.format("FAILURE\t%2d\t%s\r\n", 25, MessageFactory.makeErrorMessage(25));
+                }
+            }
+            if (!u.checkPassword(args[2])) {
+                return String.format("FAILURE\t%2d\t%s\r\n", 21, MessageFactory.makeErrorMessage(21));
+            }
+        }
+
+        //TODO: Generate a bew SessionCookie for the user to indicate that she is now connected
+        
+		return "SUCCESS\t0234\r\n";
 	}
 
 	public String postMessage(String[] args, String name) {
@@ -242,11 +290,25 @@ public class ChatServer {
         /*
          * The name variable is the username of the User sending the message.
          */
-		return "";
+		return "SUCCESS\r\n";
 	}
 
 	public String getMessages(String[] args) {
 		//TODO
-		return "";
+		return "SUCCESS\tmessage1\tmessage2\tmessage3\r\n";
 	}
+
+    /**
+     * This is for userLogin
+     * @param userName
+     * @return
+     */
+    public boolean isCreated(String userName) {
+        for (User u : users) {
+            if (userName.equals(u.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
