@@ -100,7 +100,7 @@ public class ChatServer {
      * 4.Invoke the appropriate protocol method and return its response.
      *
      *            Client Request Commands
-     * Command	       Parameter 1	    Parameter 2	    Parameter 3
+     * Command	       Parameter 0	    Parameter 1	    Parameter 2
      * ---------------------------------------------------------------
      * ADD-USER	       cookie ID	    username	    password
      * USER-LOGIN	   username	        password
@@ -109,13 +109,13 @@ public class ChatServer {
 
      *
 	 * @param request
-	 *            - the full line of the client request (CRLF included)
+	 *            - the full line of the client request (CRLF inclduded)
 	 * @return the server response
 	 */
 	public String parseRequest(String request) {
 		// TODO: Is the complete line of the client request.
         String[] requestArray = request.split("\t");
-
+        // implement a default user.
 		return request;
 	}
 
