@@ -16,9 +16,9 @@ public class User {
         return this.username;
     }
 
-    public boolean checkPassword() {
-        // TODO
-        return true;
+    public boolean checkPassword(String password) {
+        // TODO : fix it
+        return this.password == password;
     }
 
     public SessionCookie getCookie() {
@@ -26,6 +26,7 @@ public class User {
     }
 
     public void setCookie(SessionCookie cookie) {
-        // TODO
+        // TODO : fix it
+        this.cookie = cookie;
     }
 }
