@@ -1,18 +1,21 @@
+import java.util.Random;
+
 /**
  * Created by walterwei on 11/3/15.
  */
 public class SessionCookie {
     private long ID;
-    public int cookieIdentifier;
+    Random random = new Random();
+    public int cookieIdentifier = random.nextInt(10000);
+    // TODO : Error => ID must be distinct
     public static int timeoutLength = 300;
     public static final long startTime = System.currentTimeMillis();
     public static long currentTime;
     // System.currentTimeMills();
-    // TODO
 
     public SessionCookie(long id) {
         this.ID = id;
-        // TODO
+        // TODO : check it
     }
 
 

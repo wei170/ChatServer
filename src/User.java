@@ -9,7 +9,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.cookie = cookie;
-        // TODO: fix it
+        // TODO: check it
     }
 
     public String getName() {
@@ -17,7 +17,7 @@ public class User {
     }
 
     public boolean checkPassword(String password) {
-        // TODO : fix it
+        // TODO : check it
         return this.password == password;
     }
 
@@ -26,7 +26,7 @@ public class User {
     }
 
     public void setCookie(SessionCookie cookie) {
-        // TODO : fix it
+        // TODO : check it
         this.cookie = cookie;
     }
 }
