@@ -116,7 +116,7 @@ public class ChatServer {
 	 * @return the server response
 	 */
 	public String parseRequest(String request) {
-		// TODO: Is the complete line of the client request.
+        // TODO: Is the complete line of the client request.
         String[] requestArray = request.split("\t");
 
         /*
@@ -146,7 +146,7 @@ public class ChatServer {
                             Integer.parseInt(requestArray[1]) < 0 || Integer.parseInt(requestArray[1]) > 9999) {
                         return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
                     }
-					break;
+                    break;
                 case ("USER-LOGIN"):
                     if (requestArray.length != 3) {
                         return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
@@ -197,10 +197,24 @@ public class ChatServer {
                 return String.format("FAILURE\t%2d\t%s\r\n", 05, MessageFactory.makeErrorMessage(05));
             }
         }
-        
-        // TODO Finish it!
-        return "";
-	}
+
+        switch (requestArray[0]) {
+            case ("ADD-USER"):
+                return addUser(requestArray);
+            case ("USER-LOGIN"):
+                return userLogin(requestArray);
+            case ("POST-MESSAGE"):
+                try {
+                    return postMessage(requestArray, users[Integer.parseInt(requestArray[1])].getName());
+                } catch (Exception e) {
+                    return String.format("FAILURE\t%2d\t%s\r\n", 11, MessageFactory.makeErrorMessage(11));
+                }
+            case ("GET-MESSAGES"):
+                return getMessages(requestArray);
+            default:
+                return String.format("FAILURE\t%2d\t%s\r\n", 11, MessageFactory.makeErrorMessage(11));
+        }
+    }
 
 
     /*****************************************************************
@@ -212,10 +226,7 @@ public class ChatServer {
 	public String addUser(String[] args) {
 		//TODO
         /*
-         * To solve the problem of how to add the first real user, your server will implement a default user.
-         * A default user is a user whose existence is hardcoded into the server and
-         * will exist in every instance of the server.
-         * Your default user should have the username root and the password cs180.
+         * addUser needs to verify that the user doesn't already exist
          */
 
 		return "";
@@ -228,6 +239,9 @@ public class ChatServer {
 
 	public String postMessage(String[] args, String name) {
 		//TODO
+        /*
+         * The name variable is the username of the User sending the message.
+         */
 		return "";
 	}
 
