@@ -135,9 +135,7 @@ public class ChatServer {
          *  Your server should respond with this error code if the command of the client request does not
          *          match any of the protocol commands specified in this handout.
          */
-//        if (requestArray.length < 2 || requestArray.length > 3) {
-//            return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
-//        }
+
         try {
             switch (requestArray[0]) {
                 case ("ADD-USER"):
@@ -148,13 +146,60 @@ public class ChatServer {
                             Integer.parseInt(requestArray[1]) < 0 || Integer.parseInt(requestArray[1]) > 9999) {
                         return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
                     }
-                    Integer.parseInt(requestArray[3]);
-
+					break;
+                case ("USER-LOGIN"):
+                    if (requestArray.length != 3) {
+                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                    }
+                    if (requestArray[1] == null || requestArray[2] == null) {
+                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                    }
+                    break;
+                case ("POST-MESSAGE"):
+                    if (requestArray.length != 3) {
+                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                    }
+                    if (requestArray[1] == null || requestArray[2] == null ||
+                            Integer.parseInt(requestArray[1]) < 0 || Integer.parseInt(requestArray[1]) > 9999) {
+                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                    }
+                    break;
+                case ("GET-MESSAGES"):
+                    if (requestArray.length != 3) {
+                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                    }
+                    if (requestArray[1] == null || requestArray[2] == null ||
+                            Integer.parseInt(requestArray[1]) < 0 || Integer.parseInt(requestArray[1]) > 9999) {
+                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                    }
+                    Integer.parseInt(requestArray[2]);
+                    break;
+                default:
+                    return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
             }
         } catch (Exception e) {
-            return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+            return String.format("FAILURE\t%2d\t%s\r\n", 11, MessageFactory.makeErrorMessage(11));
+            // Your server should respond with this error code if the command of the client request
+            // does not match any of the protocol commands specified in this handout.
         }
-		return "";
+
+        /*
+         *  Verify the user's login session through their cookie (except for USER-LOGIN, since no cookie is required).
+         *      a. if the cookie is null, then the user is not authenticated yet, return the appropriate error message
+         *      b. if the cookie timedout, set the user cookie to null and return the appropriate error message
+         *      c. otherwise continue to the next step.
+         */
+        if (!requestArray[0].equals("USER-LOGIN")) {
+            if (users[Integer.parseInt(requestArray[1])].getCookie() == null) {
+                return String.format("FAILURE\t%2d\t%s\r\n", 21, MessageFactory.makeErrorMessage(21));
+            }
+            if (users[Integer.parseInt(requestArray[1])].getCookie().hasTimeOut()) {
+                return String.format("FAILURE\t%2d\t%s\r\n", 05, MessageFactory.makeErrorMessage(05));
+            }
+        }
+        
+        // TODO Finish it!
+        return "";
 	}
 
 

@@ -5,6 +5,56 @@
  * This is the error message factory class.
  *
  */
+
+/**
+ *  Code 	Name 	Standard Message 	Additional Explanation
+ 0X 	Server Errors 	– 	Error Class
+ 00 	Unknown Error 	“Unknown Error: An unknown error occurred. This was likely caused by an uncaught exception.”
+
+ This is the catch-all error code.
+ If something unexpectedly goes wrong, like an exception being thrown or a parameter value being null, this code should be sent.
+
+ 05 	Cookie Timeout Error 	“Cookie Timeout Error: Your login cookie has timed out.”
+
+ This error should be sent when a user, who had previously logged in to the server, sends a request to the server when their session cookie has timed out.
+ Whenever this error is sent by the server, the requesting user's session cookie should be deleted (setting it to null), as they have been logged out of the server due to inactivity.
+
+ 1X 	Request Format Errors 	– 	Error Class
+ 10 	Format Command Error 	“Format Command Error: The specified client command isn't formatted properly.”
+
+ This error code should be returned if there are any errors with the text formatting of the client request.
+
+ 11 	Unknown Command Error 	“Unknown Command Error: The specified client command doesn't exist.”
+
+ Your server should respond with this error code if the command of the client request does not match any of the protocol commands specified in this handout.
+
+ 2X 	Request Denial Errors 	– 	Error Class
+ 20 	Username Lookup Error 	“Username Lookup Error: The specified user does not exist.”
+
+ This error should be sent by the server when a specified user does not exist on the server.
+
+ 21 	Authentication Error 	“Authentication Error: The given password is not correct for the specified user.”
+
+ This error code should be returned by the server when a user attempts to log in to the server without providing the proper password.
+
+ 22 	User Error 	“User Error: The user cannot be created because the username has already been taken.”
+
+ You server should respond with this code when a error occurs regarding adding users to the server and there are no other codes that are more applicable to the situation.
+
+ 23 	Login Error 	“Login Error: The specified user has not logged in to the server.”
+
+ This error should be returned by the server when a user attempts to perform an action on the server without having first logged in.
+
+ 24 	Invalid Value Error 	“Invalid Value Error: One of the specified values is logically invalid.”
+
+ You should send this error if one of the values passed as a client request parameter is not logically valid (e.g. receiving a string when expecting an integer).
+
+ 25 	User Connected Error 	“User Connected Error: The specified user is already logged in the server.”
+
+ You should send this error if someone tries to connect to the server with a user already connected (a connected user should have a cookie different from null)
+
+
+ */
 public class MessageFactory {
 	
 	public static final int UNKNOWN_ERROR = 0;

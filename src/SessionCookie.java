@@ -5,11 +5,11 @@
 public class SessionCookie {
     private long ID;
     public static int timeoutLength;
-    public final long startTime = System.currentTimeMillis();
-    private long currentTime;
+    private long startTime ;
 
     public SessionCookie(long id) {
         this.ID = id;
+        this.startTime = System.currentTimeMillis();
         // TODO : check it
     }
 
@@ -17,14 +17,14 @@ public class SessionCookie {
 
     public boolean hasTimeOut() {
         // TODO : check it
-        if ((currentTime - startTime) > timeoutLength * 1000) {
-            return false;
+        if ((System.currentTimeMillis() - startTime) > timeoutLength * 1000) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     public void updateTimeOfActivity() {
-        currentTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
         // TODO : check it
     }
 
