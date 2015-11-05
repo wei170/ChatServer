@@ -1,6 +1,5 @@
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * <b> CS 180 - Project 4 - Chat Server Skeleton </b>
@@ -23,6 +22,10 @@ public class ChatServer {
 	public ChatServer(User[] users, int maxMessages) {
 		// TODO Complete the constructor
         this.users = users;
+        if (this.users.length == 0) {
+            //TODO: set default user
+//            parseRequest();
+        }
         this.maxMessages = maxMessages;
         this.buffer = new CircularBuffer(6);
 	}
@@ -122,7 +125,7 @@ public class ChatServer {
 	public String parseRequest(String request) {
         // TODO: Is the complete line of the client request.
         String[] requestArray = request.split("\t");
-
+        requestArray[requestArray.length - 1].substring(0, requestArray[requestArray.length - 1].length() - 5);
         /*
          * Verifying the Request Format
          * For all requests, you must validate that the text of the request adheres to the protocol
@@ -144,45 +147,45 @@ public class ChatServer {
             switch (requestArray[0]) {
                 case ("ADD-USER"):
                     if (requestArray.length != 4) {
-                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                        return MessageFactory.makeErrorMessage(10);
                     }
                     if (requestArray[1] == null || requestArray[2] == null || requestArray[3] == null ||
                             Integer.parseInt(requestArray[1]) < 0 || Integer.parseInt(requestArray[1]) > 9999) {
-                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                        return MessageFactory.makeErrorMessage(10);
                     }
                     break;
                 case ("USER-LOGIN"):
                     if (requestArray.length != 3) {
-                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                        return MessageFactory.makeErrorMessage(10);
                     }
                     if (requestArray[1] == null || requestArray[2] == null) {
-                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                        return MessageFactory.makeErrorMessage(10);
                     }
                     break;
                 case ("POST-MESSAGE"):
                     if (requestArray.length != 3) {
-                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                        return MessageFactory.makeErrorMessage(10);
                     }
                     if (requestArray[1] == null || requestArray[2] == null ||
                             Integer.parseInt(requestArray[1]) < 0 || Integer.parseInt(requestArray[1]) > 9999) {
-                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                        return MessageFactory.makeErrorMessage(10);
                     }
                     break;
                 case ("GET-MESSAGES"):
                     if (requestArray.length != 3) {
-                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                        return MessageFactory.makeErrorMessage(10);
                     }
                     if (requestArray[1] == null || requestArray[2] == null ||
                             Integer.parseInt(requestArray[1]) < 0 || Integer.parseInt(requestArray[1]) > 9999) {
-                        return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                        return MessageFactory.makeErrorMessage(10);
                     }
                     Integer.parseInt(requestArray[2]);
                     break;
                 default:
-                    return String.format("FAILURE\t%2d\t%s\r\n", 10, MessageFactory.makeErrorMessage(10));
+                    return MessageFactory.makeErrorMessage(10);
             }
         } catch (Exception e) {
-            return String.format("FAILURE\t%2d\t%s\r\n", 11, MessageFactory.makeErrorMessage(11));
+            return MessageFactory.makeErrorMessage(11);
             // Your server should respond with this error code if the command of the client request
             // does not match any of the protocol commands specified in this handout.
         }
@@ -197,11 +200,11 @@ public class ChatServer {
             for (User u : users) {
                 if (u.getName().equals(requestArray[1])) {
                     if (u.getCookie() == null) {
-                        return String.format("FAILURE\t%2d\t%s\r\n", 21, MessageFactory.makeErrorMessage(21));
+                        return MessageFactory.makeErrorMessage(21);
                     }
                     if (u.getCookie().hasTimeOut()) {
                         u.setCookie(null);
-                        return String.format("FAILURE\t%2d\t%s\r\n", 5, MessageFactory.makeErrorMessage(5));
+                        return MessageFactory.makeErrorMessage(5);
                     }
                 }
             }
@@ -217,7 +220,7 @@ public class ChatServer {
             case ("GET-MESSAGES"):
                 return getMessages(requestArray);
             default:
-                return String.format("FAILURE\t%2d\t%s\r\n", 11, MessageFactory.makeErrorMessage(11));
+                return MessageFactory.makeErrorMessage(11);
         }
     }
 
@@ -233,6 +236,15 @@ public class ChatServer {
      * @return
      ******************************************************************/
 	public String addUser(String[] args) {
+
+        /*
+         * To solve the problem of how to add the first real user, your server will implement a default user.
+         *  1. A default user is a user whose existence is hardcoded into the server
+         *      and will exist in every instance of the server.
+         *  2. Your default user should have the username root and the password cs180.
+         */
+
+
         /*
          * addUser needs to verify that the user doesn't already exist
          *
@@ -243,14 +255,14 @@ public class ChatServer {
          */
         for (int i = 0; i < users.length; i++) {
             if (users[i].getCookie().getID() == Long.parseLong(args[1])) {
-                return String.format("FAILURE\t%2d\t%s\r\n", 22, MessageFactory.makeErrorMessage(22));
+                return MessageFactory.makeErrorMessage(22);
             }
         }
 
         if (!args[2].matches("[A-Za-z0-9]+") || !args[3].matches("[A-Za-z0-9]+") ||
                 args[2].length() < 1 || args[2].length() > 20||
                 args[3].length() < 4 || args[3].length() > 40) {
-            return String.format("FAILURE\t%2d\t%s\r\n", 24, MessageFactory.makeErrorMessage(24));
+            return MessageFactory.makeErrorMessage(24);
         }
 
         User[] temp = Arrays.copyOf(users, users.length + 1);
@@ -271,15 +283,15 @@ public class ChatServer {
          *  TODO: come up with more situation
          */
         if (!isCreated(args[1])) {
-            return String.format("FAILURE\t%2d\t%s\r\n", 20, MessageFactory.makeErrorMessage(20));
+            return MessageFactory.makeErrorMessage(20);
         }
         for (User u : users) {
             if (args[1].equals(u.getName())) {
                 if (u.getCookie() != null) {
-                    return String.format("FAILURE\t%2d\t%s\r\n", 25, MessageFactory.makeErrorMessage(25));
+                    return MessageFactory.makeErrorMessage(25);
                 }
                 if (!u.checkPassword(args[2])) {
-                    return String.format("FAILURE\t%2d\t%s\r\n", 21, MessageFactory.makeErrorMessage(21));
+                    return MessageFactory.makeErrorMessage(21);
                 }
                 u.setCookie(new SessionCookie(u.getCookie().getID()));
                 String id = String.valueOf(u.getCookie().getID());
@@ -337,7 +349,7 @@ public class ChatServer {
         if (args[2].charAt(0) == ' ') countSpace++;
         if (args[2].charAt(args[2].length() - 1) == ' ') countSpace++;
         if ((args[2].length() - countSpace) < 1)
-            return String.format("FAILURE\t%2d\t%s\r\n", 24, MessageFactory.makeErrorMessage(24));
+            return MessageFactory.makeErrorMessage(24);
 
         String message = String.format("%s: %s", name, args[2]);
         this.buffer.put(message);
@@ -358,7 +370,7 @@ public class ChatServer {
          *
          */
         if (Integer.parseInt(args[2]) < 1) {
-            return String.format("FAILURE\t%2d\t%s\r\n", 24, MessageFactory.makeErrorMessage(24));
+            return MessageFactory.makeErrorMessage(24);
         }
 
         String result = "SUCCESS";
