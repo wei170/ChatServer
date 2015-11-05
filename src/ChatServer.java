@@ -198,7 +198,7 @@ public class ChatServer {
                 return String.format("FAILURE\t%2d\t%s\r\n", 21, MessageFactory.makeErrorMessage(21));
             }
             if (users[Integer.parseInt(requestArray[1])].getCookie().hasTimeOut()) {
-                return String.format("FAILURE\t%2d\t%s\r\n", 05, MessageFactory.makeErrorMessage(05));
+                return String.format("FAILURE\t%2d\t%s\r\n", 5, MessageFactory.makeErrorMessage(5));
             }
         }
 
@@ -252,9 +252,10 @@ public class ChatServer {
             return String.format("FAILURE\t%2d\t%s\r\n", 24, MessageFactory.makeErrorMessage(24));
         }
 
-        // TODO: Add the user into the Users[] users
-
-
+        User[] temp = Arrays.copyOf(users, users.length + 1);
+        User newUser = new User(args[2], args[3], new SessionCookie(Long.parseLong(args[1])));
+        temp[temp.length - 1] = newUser;
+        users = temp;
 
 		return "SUCCESS\r\n";
 	}
@@ -276,13 +277,42 @@ public class ChatServer {
                 if (u.getCookie() != null) {
                     return String.format("FAILURE\t%2d\t%s\r\n", 25, MessageFactory.makeErrorMessage(25));
                 }
+                if (!u.checkPassword(args[2])) {
+                    return String.format("FAILURE\t%2d\t%s\r\n", 21, MessageFactory.makeErrorMessage(21));
+                }
+                u.setCookie(new SessionCookie(u.getCookie().getID()));
+                String id = String.valueOf(u.getCookie().getID());
+                switch (id.length()) {
+                    case 1:
+                        id = "000" + id;
+                        break;
+                    case 2:
+                        id = "00" + id;
+                        break;
+                    case 3:
+                        id = "0" + id;
+                        break;
+                    case 4:
+                        break;
+                }
+
+                return String.format("SUCCESS\t%4s\r\n", id);
             }
-            if (!u.checkPassword(args[2])) {
-                return String.format("FAILURE\t%2d\t%s\r\n", 21, MessageFactory.makeErrorMessage(21));
-            }
+
         }
 
-        //TODO: Generate a bew SessionCookie for the user to indicate that she is now connected
+        /*
+         * 1. When this request succeeds, the server sends the client their login cookie ID.
+         *      You should note that the session ID (0234) is separated from the request status by a tab '\t'
+         *      because it is a separate field of information.
+         * 2. You should note how the cookie ID is formatted in this example response.
+         *      Even though the value of the identifier is 234, four digits were returned in the string.
+         *      Regardless of the actual number of characters needed to represent the number,
+         *      4 digits should be returned by the server.
+         *          Ex: If the ID number is 12, the server returns “SUCCESS\t0012\r\n”.
+         *          Similarly, if the ID is 4, the server responds with “SUCCESS\t0004\r\n”.
+         */
+
 
 		return "SUCCESS\t0234\r\n";
 	}
@@ -314,8 +344,28 @@ public class ChatServer {
 	}
 
 	public String getMessages(String[] args) {
-		//TODO
-		return "SUCCESS\tmessage1\tmessage2\tmessage3\r\n";
+        /*
+         * 1. For the request to succeed, the number of messages requested must be >= 1,
+         *  otherwise an INVALID_VALUE_ERROR (error #24) should be returned.
+         * 2. The number of messages required can be higher than the number of available messages,
+         *  the function returns as many as possible. It can also return 0 messages if none are available (SUCCESS\r\n).
+         * 3. Messages should be listed in chronological order with the oldest messages at the beginning.
+         *
+         * For example, if my username was cs180 and I posted the messages “Hello, World” and then “What's up?”,
+         *  the ASCII server response would look like this:
+         *      "SUCCESS\t0000) cs180: Hello, World!\t0001) cs180: What's up?\r\n"
+         *
+         */
+        if (Integer.parseInt(args[2]) < 1) {
+            return String.format("FAILURE\t%2d\t%s\r\n", 24, MessageFactory.makeErrorMessage(24));
+        }
+
+        String result = "SUCCESS";
+        for (String s : buffer.getNewest(Integer.parseInt(args[2]))) {
+            result += "\t" + s;
+        }
+        result += "\r\n";
+        return result;
 	}
 
     /**
