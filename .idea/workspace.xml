@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c3f10446-40b7-4f0c-b091-d006436566d1" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ChatServer.java" afterPath="$PROJECT_DIR$/src/ChatServer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ChatServer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,8 +37,8 @@
       <file leaf-file-name="ChatServer.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ChatServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.66214687">
-              <caret line="317" column="20" selection-start-line="317" selection-start-column="20" selection-end-line="317" selection-end-column="20" />
+            <state vertical-scroll-proportion="0.4858757">
+              <caret line="305" column="51" selection-start-line="305" selection-start-column="51" selection-end-line="305" selection-end-column="51" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -566,8 +566,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ChatServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.66214687">
-          <caret line="317" column="20" selection-start-line="317" selection-start-column="20" selection-end-line="317" selection-end-column="20" />
+        <state vertical-scroll-proportion="0.4858757">
+          <caret line="305" column="51" selection-start-line="305" selection-start-column="51" selection-end-line="305" selection-end-column="51" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
