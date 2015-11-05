@@ -19,10 +19,12 @@ import java.util.regex.Pattern;
 public class ChatServer {
 	private User[] users;
     private int maxMessages;
+    CircularBuffer buffer;
 	public ChatServer(User[] users, int maxMessages) {
 		// TODO Complete the constructor
         this.users = users;
         this.maxMessages = maxMessages;
+        this.buffer = new CircularBuffer(6);
 	}
 
 	/**
@@ -307,7 +309,7 @@ public class ChatServer {
             return String.format("FAILURE\t%2d\t%s\r\n", 24, MessageFactory.makeErrorMessage(24));
 
         String message = String.format("%s: %s", name, args[2]);
-        // TODO: use CircularBuffer.put(message) to save the message, but don't know where to call the CircularBuffer
+        this.buffer.put(message);
 		return "SUCCESS\r\n";
 	}
 
