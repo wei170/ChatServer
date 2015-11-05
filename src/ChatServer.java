@@ -281,15 +281,33 @@ public class ChatServer {
         }
 
         //TODO: Generate a bew SessionCookie for the user to indicate that she is now connected
-        
+
 		return "SUCCESS\t0234\r\n";
 	}
 
 	public String postMessage(String[] args, String name) {
-		//TODO
         /*
          * The name variable is the username of the User sending the message.
+         *
+         * 1. The name variable is the username of the User sending the message.
+         * 2. For the request to succeed, the message should contain at least 1 character after removing leading and
+         *      trailing white spaces from the message.
+         * 3. Messages have no limit on their length.
+         * 4. The username of the poster should be displayed first, followed by a colon, a space, and then the message.
+         *      For example, if my username is cs180 and I posted the message “Hello, World”
+         *      then the server should store the message as:
+         *
+         *          "cs180: Hello, World!"
+         *
          */
+        int countSpace = 0;
+        if (args[2].charAt(0) == ' ') countSpace++;
+        if (args[2].charAt(args[2].length() - 1) == ' ') countSpace++;
+        if ((args[2].length() - countSpace) < 1)
+            return String.format("FAILURE\t%2d\t%s\r\n", 24, MessageFactory.makeErrorMessage(24));
+
+        String message = String.format("%s: %s", name, args[2]);
+        // TODO: use CircularBuffer.put(message) to save the message, but don't know where to call the CircularBuffer
 		return "SUCCESS\r\n";
 	}
 
