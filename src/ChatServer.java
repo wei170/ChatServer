@@ -194,11 +194,16 @@ public class ChatServer {
          *      c. otherwise continue to the next step.
          */
         if (!requestArray[0].equals("USER-LOGIN")) {
-            if (users[Integer.parseInt(requestArray[1])].getCookie() == null) {
-                return String.format("FAILURE\t%2d\t%s\r\n", 21, MessageFactory.makeErrorMessage(21));
-            }
-            if (users[Integer.parseInt(requestArray[1])].getCookie().hasTimeOut()) {
-                return String.format("FAILURE\t%2d\t%s\r\n", 5, MessageFactory.makeErrorMessage(5));
+            for (User u : users) {
+                if (u.getName().equals(requestArray[1])) {
+                    if (u.getCookie() == null) {
+                        return String.format("FAILURE\t%2d\t%s\r\n", 21, MessageFactory.makeErrorMessage(21));
+                    }
+                    if (u.getCookie().hasTimeOut()) {
+                        u.setCookie(null);
+                        return String.format("FAILURE\t%2d\t%s\r\n", 5, MessageFactory.makeErrorMessage(5));
+                    }
+                }
             }
         }
 
@@ -208,11 +213,7 @@ public class ChatServer {
             case ("USER-LOGIN"):
                 return userLogin(requestArray);
             case ("POST-MESSAGE"):
-                try {
-                    return postMessage(requestArray, users[Integer.parseInt(requestArray[1])].getName());
-                } catch (Exception e) {
-                    return String.format("FAILURE\t%2d\t%s\r\n", 11, MessageFactory.makeErrorMessage(11));
-                }
+                return postMessage(requestArray, requestArray[1]);
             case ("GET-MESSAGES"):
                 return getMessages(requestArray);
             default:
