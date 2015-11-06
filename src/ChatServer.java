@@ -1,4 +1,6 @@
 
+import org.omg.CORBA.TIMEOUT;
+
 import java.util.*;
 
 /**
@@ -8,7 +10,7 @@ import java.util.*;
  * This is the skeleton code for the ChatServer Class. This is a private chat
  * server for you and your friends to communicate.
  * 
- * @author (Your Name) <(YourEmail@purdue.edu)>
+ * @Guocheng  <(YourEmail@purdue.edu)>
  * 
  * @lab (Your Lab Section)
  * 
@@ -19,12 +21,12 @@ public class ChatServer {
 	private User[] users;
     private int maxMessages;
     CircularBuffer buffer;
-	public ChatServer(User[] users, int maxMessages) {
+    Random r = new Random();
+    public ChatServer(User[] users, int maxMessages) {
 		// TODO Complete the constructor
         this.users = users;
         if (this.users.length == 0) {
             //TODO: set default user
-//            parseRequest();
         }
         this.maxMessages = maxMessages;
         this.buffer = new CircularBuffer(6);
@@ -125,7 +127,6 @@ public class ChatServer {
 	public String parseRequest(String request) {
         // TODO: Is the complete line of the client request.
         String[] requestArray = request.split("\t");
-        requestArray[requestArray.length - 1].substring(0, requestArray[requestArray.length - 1].length() - 5);
         /*
          * Verifying the Request Format
          * For all requests, you must validate that the text of the request adheres to the protocol
@@ -182,7 +183,7 @@ public class ChatServer {
                     Integer.parseInt(requestArray[2]);
                     break;
                 default:
-                    return MessageFactory.makeErrorMessage(10);
+                    return MessageFactory.makeErrorMessage(11);
             }
         } catch (Exception e) {
             return MessageFactory.makeErrorMessage(11);
@@ -220,7 +221,7 @@ public class ChatServer {
             case ("GET-MESSAGES"):
                 return getMessages(requestArray);
             default:
-                return MessageFactory.makeErrorMessage(11);
+                return MessageFactory.makeErrorMessage(MessageFactory.UNKNOWN_COMMAND_ERROR);
         }
     }
 
@@ -253,20 +254,29 @@ public class ChatServer {
          * 3. Password must be between 4 and 40 characters in length (inclusive).
          *
          */
-        for (int i = 0; i < users.length; i++) {
-            if (users[i].getCookie().getID() == Long.parseLong(args[1])) {
-                return MessageFactory.makeErrorMessage(22);
+        for (User u : users) {
+            if (args[2].equals(u.getName())) {
+                return MessageFactory.makeErrorMessage(MessageFactory.USER_ERROR);
             }
         }
 
         if (!args[2].matches("[A-Za-z0-9]+") || !args[3].matches("[A-Za-z0-9]+") ||
                 args[2].length() < 1 || args[2].length() > 20||
                 args[3].length() < 4 || args[3].length() > 40) {
-            return MessageFactory.makeErrorMessage(24);
+            return MessageFactory.makeErrorMessage(MessageFactory.INVALID_VALUE_ERROR);
+        }
+
+        for (User u : users) {
+            if (u.getCookie().getID() == Long.parseLong(args[1])) {
+                if (u.getCookie().hasTimeOut()) {
+                    return MessageFactory.makeErrorMessage(MessageFactory.COOKIE_TIMEOUT_ERROR);
+                }
+                u.getCookie().updateTimeOfActivity();
+            }
         }
 
         User[] temp = Arrays.copyOf(users, users.length + 1);
-        User newUser = new User(args[2], args[3], new SessionCookie(Long.parseLong(args[1])));
+        User newUser = new User(args[2], args[3], new SessionCookie(r.nextLong()));
         temp[temp.length - 1] = newUser;
         users = temp;
 
@@ -283,17 +293,17 @@ public class ChatServer {
          *  TODO: come up with more situation
          */
         if (!isCreated(args[1])) {
-            return MessageFactory.makeErrorMessage(20);
+            return MessageFactory.makeErrorMessage(MessageFactory.USERNAME_LOOKUP_ERROR);
         }
         for (User u : users) {
             if (args[1].equals(u.getName())) {
                 if (u.getCookie() != null) {
-                    return MessageFactory.makeErrorMessage(25);
+                    return MessageFactory.makeErrorMessage(MessageFactory.USER_CONNECTED_ERROR);
                 }
                 if (!u.checkPassword(args[2])) {
-                    return MessageFactory.makeErrorMessage(21);
+                    return MessageFactory.makeErrorMessage(MessageFactory.AUTHENTICATION_ERROR);
                 }
-                u.setCookie(new SessionCookie(u.getCookie().getID()));
+                u.setCookie(new SessionCookie(r.nextLong()));
                 String id = String.valueOf(u.getCookie().getID());
                 switch (id.length()) {
                     case 1:
@@ -325,9 +335,7 @@ public class ChatServer {
          *          Ex: If the ID number is 12, the server returns “SUCCESS\t0012\r\n”.
          *          Similarly, if the ID is 4, the server responds with “SUCCESS\t0004\r\n”.
          */
-
-
-		return "SUCCESS\t0234\r\n";
+        return MessageFactory.makeErrorMessage(MessageFactory.UNKNOWN_ERROR);
 	}
 
 	public String postMessage(String[] args, String name) {
@@ -345,11 +353,19 @@ public class ChatServer {
          *          "cs180: Hello, World!"
          *
          */
+        for (User u : users) {
+            if (u.getCookie().getID() == Long.parseLong(args[1])) {
+                if (u.getCookie().hasTimeOut()) {
+                    return MessageFactory.makeErrorMessage(MessageFactory.COOKIE_TIMEOUT_ERROR);
+                }
+                else u.getCookie().updateTimeOfActivity();
+            }
+        }
         int countSpace = 0;
         if (args[2].charAt(0) == ' ') countSpace++;
         if (args[2].charAt(args[2].length() - 1) == ' ') countSpace++;
         if ((args[2].length() - countSpace) < 1)
-            return MessageFactory.makeErrorMessage(24);
+            return MessageFactory.makeErrorMessage(MessageFactory.INVALID_VALUE_ERROR);
 
         String message = String.format("%s: %s", name, args[2]);
         this.buffer.put(message);
@@ -369,8 +385,15 @@ public class ChatServer {
          *      "SUCCESS\t0000) cs180: Hello, World!\t0001) cs180: What's up?\r\n"
          *
          */
+        for (User u : users) {
+            if (u.getCookie().getID() == Long.parseLong(args[1])) {
+                if (u.getCookie().hasTimeOut()) {
+                    return MessageFactory.makeErrorMessage(MessageFactory.COOKIE_TIMEOUT_ERROR);
+                }
+            }
+        }
         if (Integer.parseInt(args[2]) < 1) {
-            return MessageFactory.makeErrorMessage(24);
+            return MessageFactory.makeErrorMessage(MessageFactory.INVALID_VALUE_ERROR);
         }
 
         String result = "SUCCESS";
