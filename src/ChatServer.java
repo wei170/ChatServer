@@ -1,6 +1,3 @@
-
-import org.omg.CORBA.TIMEOUT;
-
 import java.util.*;
 
 /**
@@ -10,11 +7,10 @@ import java.util.*;
  * This is the skeleton code for the ChatServer Class. This is a private chat
  * server for you and your friends to communicate.
  * 
- * @Guocheng  <(YourEmail@purdue.edu)>
+ * @Guocheng
+ * @Xiaowei
  * 
- * @lab (Your Lab Section)
- * 
- * @version (Today's Date)
+ *
  *
  */
 public class ChatServer {
@@ -25,12 +21,15 @@ public class ChatServer {
     public ChatServer(User[] users, int maxMessages) {
 		// TODO Complete the constructor
         this.users = users;
-        if (this.users.length == 0) {
-            //TODO: set default user
-        }
+
+        User[] temp = Arrays.copyOf(this.users, this.users.length + 1);
+        temp[temp.length - 1] = new User("root", "cs180", null);
+        this.users = temp;
+
         this.maxMessages = maxMessages;
         this.buffer = new CircularBuffer(6);
 	}
+
 
 	/**
 	 * This method begins server execution.
@@ -126,6 +125,8 @@ public class ChatServer {
 	 */
 	public String parseRequest(String request) {
         // TODO: Is the complete line of the client request.
+        request = request.substring(0, request.length() - 2);
+
         String[] requestArray = request.split("\t");
         /*
          * Verifying the Request Format
@@ -134,14 +135,7 @@ public class ChatServer {
          * This includes things such as checking the number of parameters or ensuring that an integer parameter is
          *      actually a number within the correct bound.
          *
-         *  1X	Request Format Errors
-         *
-         *  10	Format Command Error	  “Format Command Error: The specified client command isn't formatted properly.”
-         *  This error code should be returned if there are any errors with the text formatting of the client request.
-         *
-         *  11	Unknown Command Error	“Unknown Command Error: The specified client command doesn't exist.”
-         *  Your server should respond with this error code if the command of the client request does not
-         *          match any of the protocol commands specified in this handout.
+
          */
 
         try {
@@ -186,7 +180,7 @@ public class ChatServer {
                     return MessageFactory.makeErrorMessage(11);
             }
         } catch (Exception e) {
-            return MessageFactory.makeErrorMessage(11);
+            return MessageFactory.makeErrorMessage(0);
             // Your server should respond with this error code if the command of the client request
             // does not match any of the protocol commands specified in this handout.
         }
@@ -203,7 +197,7 @@ public class ChatServer {
                     if (u.getCookie() == null) {
                         return MessageFactory.makeErrorMessage(21);
                     }
-                    if (u.getCookie().hasTimeOut()) {
+                    if (u.getCookie().hasTimedOut()) {
                         u.setCookie(null);
                         return MessageFactory.makeErrorMessage(5);
                     }
@@ -261,14 +255,14 @@ public class ChatServer {
         }
 
         if (!args[2].matches("[A-Za-z0-9]+") || !args[3].matches("[A-Za-z0-9]+") ||
-                args[2].length() < 1 || args[2].length() > 20||
-                args[3].length() < 4 || args[3].length() > 40) {
+                 args[2].length() < 1 || args[2].length() > 20||
+                 args[3].length() < 4 || args[3].length() > 40) {
             return MessageFactory.makeErrorMessage(MessageFactory.INVALID_VALUE_ERROR);
         }
 
         for (User u : users) {
-            if (u.getCookie().getID() == Long.parseLong(args[1])) {
-                if (u.getCookie().hasTimeOut()) {
+            if (u.getCookie() != null && u.getCookie().getID() == Long.parseLong(args[1])) {
+                if (u.getCookie().hasTimedOut()) {
                     return MessageFactory.makeErrorMessage(MessageFactory.COOKIE_TIMEOUT_ERROR);
                 }
                 u.getCookie().updateTimeOfActivity();
@@ -276,7 +270,7 @@ public class ChatServer {
         }
 
         User[] temp = Arrays.copyOf(users, users.length + 1);
-        User newUser = new User(args[2], args[3], new SessionCookie(r.nextLong()));
+        User newUser = new User(args[2], args[3], null);
         temp[temp.length - 1] = newUser;
         users = temp;
 
@@ -303,23 +297,9 @@ public class ChatServer {
                 if (!u.checkPassword(args[2])) {
                     return MessageFactory.makeErrorMessage(MessageFactory.AUTHENTICATION_ERROR);
                 }
-                u.setCookie(new SessionCookie(r.nextLong()));
-                String id = String.valueOf(u.getCookie().getID());
-                switch (id.length()) {
-                    case 1:
-                        id = "000" + id;
-                        break;
-                    case 2:
-                        id = "00" + id;
-                        break;
-                    case 3:
-                        id = "0" + id;
-                        break;
-                    case 4:
-                        break;
-                }
+                u.setCookie(new SessionCookie((long) (Math.random() * 10000)));
 
-                return String.format("SUCCESS\t%4s\r\n", id);
+                return String.format("SUCCESS\t%04d\r\n", u.getCookie().getID());
             }
 
         }
@@ -354,8 +334,8 @@ public class ChatServer {
          *
          */
         for (User u : users) {
-            if (u.getCookie().getID() == Long.parseLong(args[1])) {
-                if (u.getCookie().hasTimeOut()) {
+            if (u.getCookie() != null && u.getCookie().equals(name)) {
+                if (u.getCookie().hasTimedOut()) {
                     return MessageFactory.makeErrorMessage(MessageFactory.COOKIE_TIMEOUT_ERROR);
                 }
                 else u.getCookie().updateTimeOfActivity();
@@ -386,8 +366,13 @@ public class ChatServer {
          *
          */
         for (User u : users) {
-            if (u.getCookie().getID() == Long.parseLong(args[1])) {
-                if (u.getCookie().hasTimeOut()) {
+
+            if (u.getCookie() != null && u.getCookie().getID() == Long.parseLong(args[1])) {
+//                if (u.getCookie() == null) {
+//                    return MessageFactory.makeErrorMessage(MessageFactory.LOGIN_ERROR);
+//                }
+                if (u.getCookie().hasTimedOut()) {
+                    u.setCookie(null);
                     return MessageFactory.makeErrorMessage(MessageFactory.COOKIE_TIMEOUT_ERROR);
                 }
             }
@@ -416,5 +401,20 @@ public class ChatServer {
             }
         }
         return false;
+    }
+
+    public static void main(String[] args) {
+        User[] users = new User[1];
+        users[0] = new User("greg", "greg", new SessionCookie(42));
+        ChatServer chatServer = new ChatServer(users, 100);
+
+        String msg = "Hello, world!!";
+
+        String ta = "SUCCESS\r\n";
+        String student = chatServer.postMessage(new String[] { "POST-MESSAGE", "42", msg },  "greg");
+        System.out.println(student);
+        student = chatServer.getMessages(new String[]{"GET-MESSAGES", "42", "1"});
+        System.out.println(student);
+
     }
 }

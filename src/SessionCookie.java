@@ -4,7 +4,7 @@
  */
 public class SessionCookie {
     private long ID;
-    public static int timeoutLength;
+    public static int timeoutLength = 300;
     private long startTime ;
 
     public SessionCookie(long id) {
@@ -15,9 +15,10 @@ public class SessionCookie {
 
 
 
-    public boolean hasTimeOut() {
+    public boolean hasTimedOut() {
         // TODO : check it
-        if ((System.currentTimeMillis() - startTime) > timeoutLength * 1000) {
+
+        if (((int) System.currentTimeMillis() - (int) startTime) > timeoutLength * 1000) {
             return true;
         }
         return false;

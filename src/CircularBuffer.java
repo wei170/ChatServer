@@ -23,7 +23,7 @@ public class CircularBuffer {
         if (count < FIXED_SIZE_Buffer)  count ++;
         else count = 0;
 
-        buffer[count] = String .valueOf(FOURDNUM) + message;
+        buffer[count] = String.valueOf(FOURDNUM) + message;
     }
 
     public String[] getNewest(int numMessages) {
@@ -39,7 +39,7 @@ public class CircularBuffer {
         }
 
         String[] result = new String[numAvailable];
-        int index = count;
+        int index = count ;
         int i = 0;
         while (numMessages - 1 > i) {
             result[i++] = this.buffer[index];

@@ -22,11 +22,11 @@ public class User {
     }
 
     public SessionCookie getCookie() {
+
         return this.cookie;
     }
 
     public void setCookie(SessionCookie cookie) {
-        // TODO : check it
         this.cookie = cookie;
     }
 }
