@@ -22,7 +22,6 @@ public class User {
     }
 
     public SessionCookie getCookie() {
-
         return this.cookie;
     }
 
