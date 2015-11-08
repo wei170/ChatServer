@@ -4,26 +4,26 @@ import java.util.Arrays;
  * Created by walterwei on 11/3/15.
  */
 public class CircularBuffer {
-    public final int FIXED_SIZE_Buffer;
+    public final int fixed;
     private String[] buffer;
-    public static int FOURDNUM = -1;
+    public int fourNum = -1;
     private int count = 0;
     // Count is for counting the the current message at which position in buffer (Index)
 
     public CircularBuffer(int size) {
         //TODO : check it
-        FIXED_SIZE_Buffer = size;
-        this.buffer = new String[FIXED_SIZE_Buffer];
+        fixed = size;
+        this.buffer = new String[fixed];
     }
 
     public void put(String message) {
         //TODO : check it
-        if (FOURDNUM == 9999) {
-            FOURDNUM = 0;
-        } else { FOURDNUM++; }
+        if (fourNum == 9999) {
+            fourNum = 0;
+        } else { fourNum++; }
 
-        buffer[count++] = String.format("%04d) %s", FOURDNUM, message);
-        if (count == FIXED_SIZE_Buffer)  count = 0;
+        buffer[count++] = String.format("%04d) %s", fourNum, message);
+        if (count == fixed)  count = 0;
     }
 
     public String[] getNewest(int numMessages) {
@@ -38,7 +38,16 @@ public class CircularBuffer {
             }
         }
         final int numResult = Math.min(numAvailable, numMessages);
-
-        return Arrays.copyOf(buffer, numResult);
+        if (count - numResult >= 0) return Arrays.copyOfRange(buffer, count - numResult, count);
+        else {
+            String[] s = new String[numResult];
+            for (int i = 0; i < numResult - count; i++) {
+                s[i] = buffer[buffer.length + count - numResult + i];
+            }
+            for (int i = numResult - count; i < numResult; i++) {
+                s[i] = buffer[i - numResult + count];
+            }
+            return s;
+        }
     }
 }

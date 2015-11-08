@@ -250,7 +250,7 @@ public class ChatServer {
          * 3. Password must be between 4 and 40 characters in length (inclusive).
          *
          */
-        if (isLogin(Long.parseLong(args[1]))) {
+        if (!isLogin(Long.parseLong(args[1]))) {
             return  MessageFactory.makeErrorMessage(MessageFactory.LOGIN_ERROR);
         }
         for (User u : users) {
@@ -260,7 +260,7 @@ public class ChatServer {
         }
 
         if (!args[2].matches("[A-Za-z0-9]+") || !args[3].matches("[A-Za-z0-9]+") ||
-                 args[2].length() < 1 || args[2].length() > 20||
+                 args[2].length() < 1 || args[2].length() > 20 ||
                  args[3].length() < 4 || args[3].length() > 40) {
             return MessageFactory.makeErrorMessage(MessageFactory.INVALID_VALUE_ERROR);
         }
@@ -339,7 +339,7 @@ public class ChatServer {
          *          "cs180: Hello, World!"
          *
          */
-        if (isLogin(Long.parseLong(args[1]))) {
+        if (!isLogin(Long.parseLong(args[1]))) {
             return  MessageFactory.makeErrorMessage(MessageFactory.LOGIN_ERROR);
         }
         for (User u : users) {
@@ -351,10 +351,7 @@ public class ChatServer {
                 else u.getCookie().updateTimeOfActivity();
             }
         }
-        int countSpace = 0;
-        if (args[2].charAt(0) == ' ') countSpace++;
-        if (args[2].charAt(args[2].length() - 1) == ' ') countSpace++;
-        if ((args[2].length() - countSpace) < 1)
+        if ((args[2].trim().length()) < 1)
             return MessageFactory.makeErrorMessage(MessageFactory.INVALID_VALUE_ERROR);
 
         String message = String.format("%s: %s", name, args[2]);
@@ -375,7 +372,7 @@ public class ChatServer {
          *      "SUCCESS\t0000) cs180: Hello, World!\t0001) cs180: What's up?\r\n"
          *
          */
-        if (isLogin(Long.parseLong(args[1]))) {
+        if (!isLogin(Long.parseLong(args[1]))) {
             return  MessageFactory.makeErrorMessage(MessageFactory.LOGIN_ERROR);
         }
 
@@ -421,10 +418,10 @@ public class ChatServer {
     public boolean isLogin(long id) {
         for (User u : users) {
             if (u.getCookie() != null && id == u.getCookie().getID()) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public static void main(String[] args) {

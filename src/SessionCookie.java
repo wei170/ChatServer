@@ -3,12 +3,12 @@
  * Created by walterwei on 11/3/15.
  */
 public class SessionCookie {
-    private long ID;
+    private long id;
     public static int timeoutLength = 300;
     private long startTime ;
 
     public SessionCookie(long id) {
-        this.ID = id;
+        this.id = id;
         this.startTime = System.currentTimeMillis();
         // TODO : check it
     }
@@ -29,6 +29,6 @@ public class SessionCookie {
         // TODO : check it
     }
 
-    public long getID() { return ID; }
+    public long getID() { return id; }
 
 }

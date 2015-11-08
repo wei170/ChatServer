@@ -55,7 +55,7 @@ public class Project4Test {
         String number = res.substring(0, idxP).trim();
         String name = res.substring(idxP + 1, idxS).trim();
         String m = res.substring(idxS + 1).trim();
-
+        System.out.println(res);
         return number.length() == 4 && name.equals(user) && msg.equals(m) && String.format("%04d", idx).equals(number);
     }
 
